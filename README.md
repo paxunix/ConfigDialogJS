@@ -3,8 +3,8 @@ ConfigDialogJS
 
 Dumb and simple HTML5 dialog JS module for config settings.
 
-Supports radio button groups, boolean checkboxes, and single-line text
-input.
+Supports radio button groups, boolean checkboxes, single-line text input,
+and menu pulldowns.
 
 Handy for Greasemonkey scripts that want to manage configuration settings.
 
