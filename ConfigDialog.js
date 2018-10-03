@@ -4,7 +4,6 @@
 const OKAY_TEXT = "Ok";
 const CANCEL_TEXT = "Cancel";
 const STYLE_ID = "ConfigDialog_style";
-const OPT_CLASS = "opt";
 
 
 class ConfigDialog
@@ -53,60 +52,97 @@ class ConfigDialog
     }
 
 
-    static renderCheckbox(option, state)
+    static renderCheckbox(item, state)
     {
-        let key = ConfigDialog.htmlEscape(option.key);
-        let displayName = ConfigDialog.htmlEscape(option.display);
+        let key = ConfigDialog.htmlEscape(item.key);
+        let displayName = ConfigDialog.htmlEscape(item.display);
 
-        return `<label><input class="${OPT_CLASS}" type="checkbox" name="${key}" ${state[option.key] ? "checked" : ""}/>${displayName}</label>`;
+        return `<label><input type="checkbox" name="${key}" ${state[item.key] ? "checked" : ""}/>${displayName}</label>`;
     }
 
 
-    static renderInput(option, state)
+    static renderInput(item, state)
     {
-        let key = ConfigDialog.htmlEscape(option.key);
-        let displayName = ConfigDialog.htmlEscape(option.display);
+        let key = ConfigDialog.htmlEscape(item.key);
+        let displayName = ConfigDialog.htmlEscape(item.display);
 
-        return `<label>${displayName} <input class="${OPT_CLASS}" type="text" name="${key}" value="${ConfigDialog.htmlEscape(state[option.key] || "")}"}/></label>`;
+        return `<label>${displayName} <input type="text" name="${key}" value="${ConfigDialog.htmlEscape(state[item.key] || "")}"}/></label>`;
     }
 
 
-    static renderRadio(option, state)
+    static renderRadioGroup(item, state)
     {
-        let key = ConfigDialog.htmlEscape(option.key);
-        let displayName = ConfigDialog.htmlEscape(option.display);
+        let key = ConfigDialog.htmlEscape(item.key);
+        let markup = [ ];
 
-        return `<label><input class="${OPT_CLASS}" type="radio" name="${key}" ${state[option.key] === option.value ? "checked" : ""} value="${ConfigDialog.htmlEscape(option.value)}"/>${displayName}</label>`;
+        for (let i of item.items)
+        {
+            let displayName = ConfigDialog.htmlEscape(i.display);
+
+            markup.push(`<label><input style="display: block;" type="radio" name="${key}" ${state[key] === i.value ? "checked" : ""} value="${ConfigDialog.htmlEscape(i.value)}"/>${displayName}</label>`);
+        }
+
+        return markup.join("\n");
     }
 
 
-    static renderOption(option, state)
+    static renderSelect(item, state)
     {
-        // Note that the state's data (not the rendering input) determines
-        // the option type.
-        let keyType = typeof(state[option.key]);
-        let hasValue = option.hasOwnProperty("value");
+        let key = ConfigDialog.htmlEscape(item.key);
+        let markup = [ `<select style="width: 100%;" name=${key}>` ];
 
-        if (hasValue)
-            return ConfigDialog.renderRadio(option, state);
+        for (let i of item.items)
+        {
+            let displayName = ConfigDialog.htmlEscape(i.display);
+            markup.push(`<label><option ${state[key] === i.value ? "selected" : ""} value="${ConfigDialog.htmlEscape(i.value)}"/>${displayName}</label>`);
+        }
 
-        if (keyType === "boolean")
-            return ConfigDialog.renderCheckbox(option, state);
+        markup.push("</select>");
 
-        return ConfigDialog.renderInput(option, state);
+        return markup.join("\n");
+    }
+
+
+    static renderItem(item, state)
+    {
+        let renderFunc;
+
+        switch (item.type)
+        {
+            case "text":
+                renderFunc = ConfigDialog.renderInput;
+                break;
+
+            case "pulldown":
+                renderFunc = ConfigDialog.renderSelect;
+                break;
+
+            case "checkbox":
+                renderFunc = ConfigDialog.renderCheckbox;
+                break;
+
+            case "radiogroup":
+                renderFunc = ConfigDialog.renderRadioGroup;
+                break;
+
+            default:
+                throw new Error(`Unknown item type ${item.type}`);
+        }
+
+        return renderFunc(item, state);
     }
 
 
     static renderSection(sectionData, state)
     {
-        let displayName = sectionData.display ?
-            `<legend>${ConfigDialog.htmlEscape(sectionData.display)}</legend>` :
+        let displayName = sectionData.section ?
+            `<legend>${ConfigDialog.htmlEscape(sectionData.section)}</legend>` :
             "";
         let markup = [ `<fieldset style="margin-bottom: 1.5ex;">${displayName}` ];
 
-        for (let opt of sectionData.options)
+        for (let i of sectionData.items)
         {
-            markup.push(`<div style="margin-bottom: 1ex;">${ConfigDialog.renderOption(opt, state)}</div>`);
+            markup.push(`<div style="margin-bottom: 1ex;">${ConfigDialog.renderItem(i, state)}</div>`);
         }
 
         markup.push("</fieldset>");
@@ -186,28 +222,16 @@ dialog.${STYLE_ID}::backdrop {
     getDialogState()
     {
         let state = {};
+        let form = this.dialog.querySelector("form");
+        let formData = new FormData(form);
 
-        for (let el of this.dialog.querySelectorAll(`.${OPT_CLASS}`))
+        for (let d of formData.entries())
         {
-            switch (el.type)
-            {
-                case "checkbox":
-                    state[el.name] = el.checked;
-                    break;
-
-                case "text":
-                    state[el.name] = el.value;
-                    break;
-
-                case "radio":
-                    if (el.checked)
-                        state[el.name] = el.value;
-
-                    break;
-
-                default:
-                    break;
-            }
+            let [key, value] = d;
+            if (form.elements[key].type === "checkbox")
+                state[key] = value === "on";
+            else
+                state[key] = value;
         }
 
         return state;
