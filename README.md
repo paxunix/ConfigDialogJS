@@ -70,7 +70,19 @@ d.show()
     .then(data => { console.log("d data: ", data); })
     .catch(() => { console.log("d cancelled/aborted"); });
 
-d2 = new ConfigDialog({ title: "Some Title", sections: [ { options: [ { display: "Thing 1", key: "thingval" } ] } ] }, {}, document);
+d2 = new ConfigDialog({
+    title: "Some Title",
+    sections: [
+      {
+        items: [
+            { type: "text", display: "Thing 1", key: "thingval" }
+        ]
+      }
+    ]},
+    {},
+    document,
+    { OKAY_TEXT: "Oui", CANCEL_TEXT: "Non" }
+);
 
 d2.show()
     .then(data => { console.log("d2 data: ", data); })

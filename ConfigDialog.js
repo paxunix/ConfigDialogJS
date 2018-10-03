@@ -1,16 +1,19 @@
 "use strict";
 
 
-const OKAY_TEXT = "Ok";
-const CANCEL_TEXT = "Cancel";
+const localization_en_US = {
+    OKAY_TEXT: "Ok",
+    CANCEL_TEXT: "Cancel",
+};
 const STYLE_ID = "ConfigDialog_style";
 
 
 class ConfigDialog
 {
-    constructor(config, initialState, doc)
+    constructor(config, initialState, doc, localization = localization_en_US)
     {
         this.config = config;
+        this.localization = localization;
 
         this.dialog = doc.createElement("dialog");
         this.dialog.classList.add(STYLE_ID);
@@ -25,7 +28,7 @@ class ConfigDialog
         // Called regardless of how the dialog was closed, so no need for
         // separate cancel event handler.
         this.dialog.addEventListener("close", evt => {
-            if (this.dialog.returnValue === OKAY_TEXT)
+            if (this.dialog.returnValue === localization.OKAY_TEXT)
                 return this.onOkay();
 
             return this.onCancel();
@@ -187,8 +190,8 @@ dialog.${STYLE_ID}::backdrop {
 
         markup.push(`
 <div style="display: flex; justify-content: space-evenly;">
-<input type="submit" style="width: 5em;" value="${OKAY_TEXT}" />
-<input type="submit" style="width: 5em;" value="${CANCEL_TEXT}" />
+<input type="submit" style="width: 5em;" value="${this.localization.OKAY_TEXT}" />
+<input type="submit" style="width: 5em;" value="${this.localization.CANCEL_TEXT}" />
 </div>
 `);
         markup.push("</form>", "</div>");
