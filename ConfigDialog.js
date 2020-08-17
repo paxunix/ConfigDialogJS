@@ -64,6 +64,18 @@ class ConfigDialog
     }
 
 
+    static renderEscMarkup(item, state)
+    {
+        return `<p>${ConfigDialog.htmlEscape(item.content)}</p>`;
+    }
+
+
+    static renderMarkup(item, state)
+    {
+        return `<p>${item.content}</p>`;
+    }
+
+
     static renderInput(item, state)
     {
         let key = ConfigDialog.htmlEscape(item.key);
@@ -112,6 +124,14 @@ class ConfigDialog
 
         switch (item.type)
         {
+            case "escmarkup":
+                renderFunc = ConfigDialog.renderEscMarkup;
+                break;
+
+            case "markup":
+                renderFunc = ConfigDialog.renderMarkup;
+                break;
+
             case "text":
                 renderFunc = ConfigDialog.renderInput;
                 break;
