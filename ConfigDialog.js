@@ -46,7 +46,7 @@ class ConfigDialog
     // from http://2ality.com/2015/01/template-strings-html.html
     static htmlEscape(str)
     {
-        return str.replace(/&/g, '&amp;') // first!
+        return String(str).replace(/&/g, '&amp;') // first!
               .replace(/>/g, '&gt;')
               .replace(/</g, '&lt;')
               .replace(/"/g, '&quot;')
