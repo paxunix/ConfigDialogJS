@@ -210,8 +210,8 @@ dialog.${STYLE_ID}::backdrop {
 
         markup.push(`
 <div style="display: flex; justify-content: space-evenly;">
-<input type="submit" style="width: 5em;" value="${this.localization.OKAY_TEXT}" />
-<input type="submit" style="width: 5em;" value="${this.localization.CANCEL_TEXT}" />
+<input type="submit" style="width: 5em;" value="${ConfigDialog.htmlEscape(this.localization.OKAY_TEXT)}" />
+<input type="reset" style="width: 5em;" value="${ConfigDialog.htmlEscape(this.localization.CANCEL_TEXT)}" />
 </div>
 `);
         markup.push("</form>", "</div>");
