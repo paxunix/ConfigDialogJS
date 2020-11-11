@@ -239,7 +239,7 @@ dialog.${STYLE_ID}::backdrop {
 
             // Ensure state is cleared before displaying, since this is set
             // by canceling the dialog with Esc or via form interactions.
-            this.dialog.returnValue = undefined;
+            this.dialog.returnValue = "";
             this.dialog.showModal();
         });
     }
