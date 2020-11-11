@@ -22,16 +22,19 @@ class ConfigDialog
         this.setDialogState(initialState);
 
         // Set in show()
-        this.onOkay = null;
-        this.onCancel = null;
+        this.resolveOkay = null;
+        this.rejectCancel = null;
 
         // Called regardless of how the dialog was closed, so no need for
         // separate cancel event handler.
         this.dialog.addEventListener("close", evt => {
             if (this.dialog.returnValue === localization.OKAY_TEXT)
-                return this.onOkay();
+            {
+                this.resolveOkay();
+                return;
+            }
 
-            return this.onCancel();
+            this.rejectCancel();
         });
 
         // Only add style to document head if it's not already there (same
@@ -225,13 +228,13 @@ dialog.${STYLE_ID}::backdrop {
         let oldState = this.getDialogState();
 
         return new Promise((res, rej) => {
-            this.onOkay = () => {
-                return res(this.getDialogState());
+            this.resolveOkay = () => {
+                res(this.getDialogState());
             };
 
-            this.onCancel = () => {
+            this.rejectCancel = () => {
                 this.setDialogState(oldState);
-                rej();
+                rej({});
             };
 
             // Ensure state is cleared before displaying, since this is set
