@@ -191,6 +191,13 @@ class ConfigDialog
         style.textContent = `
 dialog.${STYLE_ID}::backdrop {
     background: linear-gradient(45deg, rgba(6,33,47,0.82), rgba(84,157,195,0.82));
+
+dialog.${STYLE_ID} .okayButton {
+    width: 5em;
+}
+
+dialog.${STYLE_ID} .cancelButton {
+    width: 5em;
 }
 `;
 
@@ -213,8 +220,8 @@ dialog.${STYLE_ID}::backdrop {
 
         markup.push(`
 <div style="display: flex; justify-content: space-evenly;">
-<input type="submit" style="width: 5em;" value="${ConfigDialog.htmlEscape(this.localization.OKAY_TEXT)}" />
-<input type="reset" style="width: 5em;" value="${ConfigDialog.htmlEscape(this.localization.CANCEL_TEXT)}" />
+<input type="button" class="okayButton" value="${ConfigDialog.htmlEscape(this.localization.OKAY_TEXT)}" />
+<input type="button" class="cancelButton" value="${ConfigDialog.htmlEscape(this.localization.CANCEL_TEXT)}" />
 </div>
 `);
         markup.push("</form>", "</div>");
@@ -267,6 +274,17 @@ dialog.${STYLE_ID}::backdrop {
     setDialogState(newState)
     {
         this.dialog.innerHTML = this.getMarkup(newState);
+
+        // Mirror default behaviour of HTML5 dialogs if the Okay button were
+        // to submit and the Cancel button were to reset.
+        this.dialog.querySelector(".okayButton").addEventListener("click", () => {
+            this.dialog.returnValue = this.localization.OKAY_TEXT;
+            this.dialog.close();
+        });
+        this.dialog.querySelector(".cancelButton").addEventListener("click", () => {
+            this.dialog.returnValue = this.localization.CANCEL_TEXT;
+            this.dialog.close();
+        });
     }
 };
 
