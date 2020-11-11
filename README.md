@@ -55,6 +55,13 @@ d = new ConfigDialog({
                   { display: "Menu 3", value: "m3" },
                 ]}
             ],
+        },
+        {
+            section: "Markup Section",
+            items: [
+              { type: "markup", content: "This is the <b>html</b> content" },
+              { type: "escmarkup", content: "This is <b>escaped</b> content" },
+            ],
         }
     ]},
     {   // initial data
