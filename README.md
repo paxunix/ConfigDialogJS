@@ -49,7 +49,7 @@ d = new ConfigDialog({
         {
             section: "Pulldown Section",
             items: [
-              { type: "pulldown", key: "optpd", items: [
+              { type: "pulldown", display: "The Menu", key: "optpd", items: [
                   { display: "Menu 1", value: "m1" },
                   { display: "Menu 2", value: "m2" },
                   { display: "Menu 3", value: "m3" },
